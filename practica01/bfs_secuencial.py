@@ -32,7 +32,7 @@ def bfs(graph,root_node):
             The list with the visited nodes in the order they were visited
     """
     if [] in graph:
-        raise Exception("bfs doesnt work in disconnected graphs")        
+        print(('{} is a disconnected graph').format(graph))     
     visited_nodes = [root_node] #The root node will be the first visited node
     next_nodes = [] #We are going to use this list as a  queue to travel the nodes in the bfs way
     try:
@@ -49,6 +49,6 @@ def bfs(graph,root_node):
     return visited_nodes    
 
 if __name__ == "__main__":
-    print(bfs([[1,2,3],[0,3],[0,3],[0,1,2,4],[3]],0)) #Example 1
+    print(bfs([[1,2,3],[0,3],[0,3],[0,1,2,4],[3],[]],0)) #Example 1
     print(bfs([[1,2],[0,3,4],[0,5,6],[1],[1],[2],[2]],6)) #Example 2
     print(bfs([[1,4],[0,2,3],[1],[1,4],[3,0]],4)) #Example 3
