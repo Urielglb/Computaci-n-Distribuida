@@ -21,9 +21,7 @@ class NodoArbolGenerador(Nodo):
             self.parent = self.id_nodo
             self.exptd_msg = len(self.vecinos)
             self.canal_salida.envia({'s':self.id_nodo, 'm':'G'}, self.vecinos)
-            # print("Ronda %d, nodo %d inicia como root"% (env.now,self.id_nodo))
         else:
-            # print("Ronda %d, nodo %d inicia como child"% (env.now, self.id_nodo))
             pass
 
         finished = False
@@ -34,7 +32,6 @@ class NodoArbolGenerador(Nodo):
             call = msg['m']
             # GO
             if (call == 'G'):
-                # print("Ronda %d, %d recibi go de %d "% (env.now, self.id_nodo, sender))
                 if (self.parent == None):
                     self.parent = sender
                     self.exptd_msg = len(self.vecinos) - 1
@@ -45,21 +42,17 @@ class NodoArbolGenerador(Nodo):
                             if (i != sender)  :
                                 self.canal_salida.envia_uno({'s':self.id_nodo, 'm':'G'}, i)
                 else:
-                    # print("Ronda %d, %d estoy rechazando a %d" % (env.now,self.id_nodo, sender))
                     self.canal_salida.envia_uno({'s':self.id_nodo, 'm':'B','vs': -1}, sender)
             # BACK
             elif (call == 'B'):
                 val_set = msg['vs']
-                # print("Ronda %d, %d recibi back %d de %d "% (env.now,self.id_nodo,val_set,sender))
                 self.exptd_msg -= 1
                 if (val_set != -1):
                     self.child.add(sender)
                 if (self.exptd_msg == 0):
                     if (self.parent != self.id_nodo):
-                        # print("Mandando Back(%d) a parent %d" % (self.id_nodo, self.parent))
                         self.canal_salida.envia_uno({'s':self.id_nodo, 'm':'B', 'vs': self.id_nodo}, self.parent)
                     else:
-                        # print("La ejecucion ha terminado")
                         finished = True
 
     def get_id(self):
