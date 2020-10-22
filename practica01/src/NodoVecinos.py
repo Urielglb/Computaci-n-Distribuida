@@ -60,16 +60,3 @@ class NodoVecinos(Nodo):
             EL id del nodo
         """
         return self.id_nodo
-
-if __name__ == "__main__":
-    env = simpy.Environment()
-    bc_pipe = CanalGenerico.CanalGenerico(env)
-    grafica = []
-    ady = [[1,3],[0,4],[3],[0,2],[1,5],[4]]
-    for i in range (len(ady)):
-        grafica.append(NodoVecinos(i,ady[i],bc_pipe.crea_canal_de_entrada(),bc_pipe))
-    for i in range (len(ady)):
-        env.process(grafica[i].manda_vecinos(env))
-    env.run()
-    for nodo in grafica:
-        print(("Nodo {} con identifiers {}").format(nodo.get_id(),nodo.identifiers))
