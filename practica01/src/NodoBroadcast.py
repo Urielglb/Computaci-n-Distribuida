@@ -43,14 +43,18 @@ class NodoBroadcast(Nodo):
         El ambiente de simpy donde se está llevando a cabo la ejecución de todos los nodos
         """
         if(self.get_id()==0):
-            data = ("Un proceso para gobernarlos a todos \n Un proceso para encontrarlos, \n un anillo para atraerlos a todos y atraerlos en las tinieblas")
-            self.mensaje = data
+            data = {"message":"Un proceso para gobernarlos a todos \n Un proceso para encontrarlos, \n un anillo para atraerlos a todos y atraerlos en las tinieblas",
+                    "id":self.get_id()}
+            self.mensaje = data.get("message")
             self.canal_salida.envia(data,self.hijos)
         while True:
             yield env.timeout(1)
             data =  yield self.canal_entrada.get()
-            self.mensaje = data
-            self.canal_salida.envia(data,self.hijos)
+            self.mensaje = data.get("message")
+            for hijo in self.hijos:
+                if hijo == data.get("id"):#Este caso es el que la adyacencia es el padre
+                    continue
+                self.canal_salida.envia_uno({"message":data.get("message"),"id":self.get_id()},hijo)
 
 
     def get_id(self):
