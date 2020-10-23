@@ -11,32 +11,36 @@ class NodoConvergecast(Nodo):
         self.canal_entrada = canal_entrada
         self.canal_salida = canal_salida
         # Atributos extra para convergecast
-        self.parent = None
-        self.child = set()
         self.data = None
+        self.parent = None
+        self.nodoRaiz = False
+        self.child = set()
         self.buffer = []
-        self.rcvd_msg = 0
 
     def convergecast(self, env):
         self.buffer += [(self.id_nodo, self.data)]
         # Valores iniciales para hojas.
-        if (len(self.child) == 0):
-            self.canal_salida.envia_uno({'m':'B','buffer': self.buffer}, self.parent)
+        if (len(self.vecinos) == 1): # Si es hoja
+            self.canal_salida.envia({'s':self.id_nodo, 'm':'B','buffer': self.buffer}, self.vecinos)
 
         finished = False
         while (not finished):
             yield env.timeout(1)
             msg = yield self.canal_entrada.get()
+            sndr = msg['s']
             call = msg['m']
             buff = msg['buffer']
-            if (call == 'B'):
+            if (call == 'B'): # Si llega un back, agrega el nodo a los hijos.
                 self.buffer += buff
-                self.rcvd_msg += 1
-            if (self.rcvd_msg == len(self.child)):
-                if (self.parent != self.id_nodo):
-                    self.canal_salida.envia_uno({'m':'B','buffer': self.buffer}, self.parent)
-                else:
-                    finished = True
+                self.child.add(sndr)
+            if (len(self.child) == len(self.vecinos) - 1 and (not self.nodoRaiz)): # Si ya llegaron todos tus hijos.
+                for i in self.vecinos:  # El que no mando nada es tu padre.
+                    if (not (i in self.child)):
+                        self.parent = i # Seleccionalo como tal.
+                # Mandale todo lo que recibiste al padre.
+                self.canal_salida.envia_uno({'s':self.id_nodo,'m':'B','buffer': self.buffer}, self.parent)
+            elif (len(self.child) == len(self.vecinos)): # Si eres la raiz.
+                finished = True
 
     def get_id(self):
         '''Regresa el id del nodo.'''
@@ -52,21 +56,13 @@ def main():
     for i in range(len(ady)):
         grafica.append(NodoConvergecast(i,ady[i], bc_pipe.crea_canal_de_entrada(), bc_pipe))
 
-    # Esto es asi porque el algoritmo supone un arbol, pero para eso tendriamos que conectar
-    # cada nodo para que tuviera informacion de quien es su padre y quienes son sus hijos,
-    # eso es basicamente hacer el algoritmo 7, y eso sale de las reglas de lo requerido.
-    # Por la anterior razon, la data del arbol esta hardcodeada.
-    # Pero el algoritmo funciona como debe.
-    grafica[0].parent = 0
-    grafica[1].parent = 0
-    grafica[2].parent = 0
-    grafica[3].parent = 2
-    grafica[0].data = "Soy 0"
-    grafica[1].data = "Soy 1"
-    grafica[2].data = "Soy 2"
-    grafica[3].data = "Soy 3"
-    grafica[2].child = {3}
-    grafica[0].child = {1,2}
+    # Tuve que modificar el algoritmo ya que no sabemos quienes son padres o hijos.
+    # Solo sabemos que estamos en un arbol y quienes son hojas.
+    # La unica informacion extra que se necesita par hacer que el algoritmo funcione
+    # es indicar quien es la raiz, sino el algoritmo asumira que es el nodo mas a la
+    # mitad del arbol.
+
+    grafica[0].nodoRaiz = True
 
     for i in range(len(ady)):
         env.process(grafica[i].convergecast(env))
