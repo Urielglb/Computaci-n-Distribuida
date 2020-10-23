@@ -65,8 +65,6 @@ def main():
     bc_pipe = CanalGenerico.CanalGenerico(env)
 
     grafica = []
-    # ady = [[1,2],[0,2],[0,1]]
-    # ady = [[1,2,3],[0,2,3],[0,1,3],[1,2,3]]
     ady = [[1,2,3],[0,2,3],[0,1,3],[1,2,3,4],[3]]
     for i in range(len(ady)):
         grafica.append(NodoArbolGenerador(i,ady[i], bc_pipe.crea_canal_de_entrada(), bc_pipe))
@@ -77,8 +75,8 @@ def main():
     env.run()
 
     # Vemos que el arbol construido es el correcto.
-    # for nodo in grafica:
-    #     print("Nodo %d con hijos %s" % (nodo.get_id(), nodo.child))
+    for nodo in grafica:
+        print("Nodo %d con hijos %s" % (nodo.get_id(), nodo.child))
 
 if __name__ == '__main__':
     main()
