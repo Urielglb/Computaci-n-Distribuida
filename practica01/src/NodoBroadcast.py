@@ -66,3 +66,16 @@ class NodoBroadcast(Nodo):
             EL id del nodo
         """
         return self.id_nodo
+
+if __name__ == "__main__":
+    env = simpy.Environment()
+    bc_pipe = CanalGenerico.CanalGenerico(env)
+    grafica = []
+    ady = [[1,2],[0,3,4],[0,5,6],[1],[1],[2],[2]]
+    for i in range (len(ady)):
+        grafica.append(NodoBroadcast(i,ady[i],bc_pipe.crea_canal_de_entrada(),bc_pipe))
+    for i in range (len(ady)):
+        env.process(grafica[i].broadcast(env))
+    env.run()
+    for nodo in grafica:
+        print(("Nodo {} con mensaje {}").format(nodo.get_id(),nodo.mensaje))
