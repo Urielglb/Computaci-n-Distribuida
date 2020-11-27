@@ -19,9 +19,9 @@ class TestPractica4:
         for nodo in grafica:
             actual_reloj = [0]*8 if es_vectorial else 0 # Si algun reloj resulta menor a este valor está mal.
             for evento in nodo.eventos:
-                reloj_actual_menor = self.compara_relojes(actual_reloj, evento[0])if es_vectorial \
+                reloj_actual_menor = self.compara_relojes(actual_reloj, evento[0]) if es_vectorial \
                     else actual_reloj < evento[0]
-                if reloj_actual_menor: # El reloj encontrado es menor que el que llevamos
+                if  not reloj_actual_menor: # El reloj encontrado es menor que el que llevamos
                     return False
                 actual_reloj = evento[0]
         return True # Si no encontramos ningun reloj malo, entonces todo ta' bien.
@@ -35,11 +35,12 @@ class TestPractica4:
         eventos_vistos = {}
         for nodo in grafica: # Iteramos cada evento...
             for evento in nodo.eventos: # ...de cada nodo
-                llave = [evento[1], evento[3], evento[4]] # La llave que usaremos para buscar
-                valor = [evento[0], evento[2]] # El valor que agregaremos (en caso de que la llave no exista)
+                llave = tuple([evento[2], evento[3], evento[4]]) # La llave que usaremos para buscar
+                valor = [evento[0], evento[1]] # El valor que agregaremos (en caso de que la llave no exista)
                 # Renombramos estos valores para hacer más legible
                 reloj_actual = evento[0]
                 tipo_actual = evento[1]
+                print(llave)
                 try:
                     # Puede que este valor no exista, lo que nos lanzaria
                     # una excepcion (KeyError)
