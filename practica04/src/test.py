@@ -7,7 +7,7 @@ class TestPractica4:
     # Las aristas de adyacencias de la gráfica.
     adyacencias = [[1, 3, 4, 6], [0, 3, 5, 7], [3, 5, 6], [0, 1, 2], [0], [1, 2], [0, 2], [1]]
     adyacencias_arbol = [[1, 2], [3], [5], [4], [], []]
-    adyacencias_arbol_1 = [[1], [2], [3, 4], [5, 6], [], []] # Será el mismo para todos.
+    adyacencias_arbol_1 = [[1], [2], [3, 4], [5, 6], [], [], []] # Será el mismo para todos.
     adyacencias_arbol_2 = [[1], [2], [3], []]
 
     def verifica_orden_ascendente(self, grafica, es_vectorial):
@@ -21,7 +21,7 @@ class TestPractica4:
             for evento in nodo.eventos:
                 reloj_actual_menor = self.compara_relojes(actual_reloj, evento[0]) if es_vectorial \
                     else actual_reloj < evento[0]
-                if  not reloj_actual_menor: # El reloj encontrado es menor que el que llevamos
+                if not reloj_actual_menor: # El reloj encontrado es menor que el que llevamos
                     return False
                 actual_reloj = evento[0]
         return True # Si no encontramos ningun reloj malo, entonces todo ta' bien.
@@ -40,7 +40,6 @@ class TestPractica4:
                 # Renombramos estos valores para hacer más legible
                 reloj_actual = evento[0]
                 tipo_actual = evento[1]
-                print(llave)
                 try:
                     # Puede que este valor no exista, lo que nos lanzaria
                     # una excepcion (KeyError)
